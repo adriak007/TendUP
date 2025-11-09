@@ -22,6 +22,7 @@
 
       <main class="main">
         <header class="main-header">
+          <button id="menuBtn" class="btn-icon mobile-only" aria-label="Abrir menu" title="Menu">☰</button>
           <h1>Produção</h1>
           <div style="display:flex; gap:8px; align-items:center;">
             <button id="authBtn" class="btn-secondary">Entrar</button>
@@ -39,6 +40,9 @@
         <!-- Conteúdo é injetado via JS -->
       </div>
     </div>
+
+    <!-- Backdrop da Sidebar Mobile -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop" aria-hidden="true"></div>
 
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

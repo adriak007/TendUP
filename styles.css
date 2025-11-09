@@ -75,6 +75,8 @@ body {
   justify-content: space-between;
   margin-bottom: 16px;
 }
+.main-header h1 { margin: 0; }
+.mobile-only { display: none; }
 .btn-primary {
   background: var(--brand);
   color: #0a1510;
@@ -316,5 +318,26 @@ input[type="number"] {
 
 @media (max-width: 920px) {
   .app { grid-template-columns: 1fr; }
-  .sidebar { display: none; }
+  .mobile-only { display: inline-flex; align-items:center; justify-content:center; }
+  .sidebar {
+    display: block;
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 280px;
+    max-width: 85vw;
+    transform: translateX(-100%);
+    transition: transform 200ms ease;
+    z-index: 1100;
+  }
+  .sidebar.open { transform: translateX(0); }
 }
+
+/* Backdrop da sidebar mobile */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  z-index: 1090;
+}
+.sidebar-backdrop.open { display: block; }
