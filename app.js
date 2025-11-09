@@ -24,6 +24,9 @@ const WEEKDAY_LABELS = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 const employeesEl = document.getElementById("employees");
 const addEmployeeBtn = document.getElementById("addEmployeeBtn");
 const authBtn = document.getElementById("authBtn");
+const menuBtn = document.getElementById("menuBtn");
+const sidebarEl = document.querySelector('.sidebar');
+const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 const overlayEl = document.getElementById("employeeOverlay");
 const overlayContentEl = overlayEl?.querySelector('.overlay-content');
 
@@ -275,6 +278,26 @@ function closeOverlay() {
 // Fechar ao clicar fora do conteúdo
 overlayEl?.addEventListener('click', (e) => {
   if (e.target === overlayEl) closeOverlay();
+});
+
+// Sidebar mobile toggling
+function toggleSidebar(open) {
+  if (!sidebarEl || !sidebarBackdrop) return;
+  const willOpen = open ?? !sidebarEl.classList.contains('open');
+  sidebarEl.classList.toggle('open', willOpen);
+  sidebarBackdrop.classList.toggle('open', willOpen);
+  sidebarBackdrop.setAttribute('aria-hidden', String(!willOpen));
+}
+
+menuBtn?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  toggleSidebar(true);
+});
+sidebarBackdrop?.addEventListener('click', () => toggleSidebar(false));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    toggleSidebar(false);
+  }
 });
 
 function renderWeeksUI(employee, weeksListEl, bodyEl) {
