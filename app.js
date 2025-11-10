@@ -1,4 +1,4 @@
-// Simple SPA-like behavior for Produção
+﻿// Simple SPA-like behavior for ProduÃ§Ã£o
 
 const state = {
   employees: [],
@@ -30,18 +30,6 @@ const sidebarBackdrop = document.getElementById('sidebarBackdrop');
 const overlayEl = document.getElementById("employeeOverlay");
 const overlayContentEl = overlayEl?.querySelector('.overlay-content');
 
-addEmployeeBtn?.addEventListener("click", async () => {
-  if (!currentUser) {
-    alert("Faça login para adicionar funcionários.");
-    return;
-  }
-  const name = window.prompt("Nome do funcionário:");
-  if (!name) return;
-  const employee = await dbCreateEmployee(name.trim());
-  if (!employee) return;
-  state.employees.push(employee);
-  employeesEl.appendChild(renderEmployeeCard(employee));
-});
 
 let currentUser = null;
 
@@ -54,22 +42,7 @@ authBtn?.addEventListener('click', async () => {
     updateAuthUI();
     return;
   }
-  const email = prompt('Email:');
-  if (!email) return;
-  const password = prompt('Senha:');
-  if (!password) return;
-  const { data, error } = await window.sbSignIn?.(email, password) || {};
-  if (error) {
-    const trySignUp = confirm('Usuário não encontrado. Criar conta?');
-    if (trySignUp) {
-      const { data: d2, error: e2 } = await window.sbSignUp?.(email, password) || {};
-      if (e2) return alert('Erro ao cadastrar: ' + e2.message);
-      alert('Cadastro criado. Verifique seu email se necessário e tente entrar novamente.');
-    } else {
-      return alert('Erro de login: ' + error.message);
-    }
-  }
-  await initAuth();
+  window.location.href = 'login.html';
 });
 
 function createEmployee(name) {
@@ -106,9 +79,9 @@ function renderEmployeeCard(employee) {
       <div class="employee-name">${escapeHtml(employee.name)}</div>
       <div class="employee-hint">Clique para abrir</div>
     </div>
-    <div class="employee-actions" aria-label="Ações do funcionário">
+    <div class="employee-actions" aria-label="AÃ§Ãµes do funcionÃ¡rio">
       <button class="btn-secondary btn-sm" data-action="edit" title="Editar nome">Editar</button>
-      <button class="btn-danger btn-sm" data-action="delete" title="Excluir funcionário">Apagar</button>
+      <button class="btn-danger btn-sm" data-action="delete" title="Excluir funcionÃ¡rio">Apagar</button>
     </div>
   `;
   card.appendChild(compact);
@@ -130,22 +103,22 @@ function renderEmployeeCard(employee) {
     if (!btn) return;
     const action = btn.dataset.action;
     if (action === 'edit') {
-      const newName = prompt('Novo nome do funcionário:', employee.name);
-      if (!newName) return;
-      const trimmed = newName.trim();
+      const newName = await window.showPrompt?.({ title: 'Editar nome', label: 'Novo nome do funcionÃ¡rio', initial: employee.name });
+      if (newName == null) return;
+      const trimmed = String(newName).trim();
       if (!trimmed || trimmed === employee.name) return;
       await dbUpdateEmployeeName(employee.id, trimmed);
       employee.name = trimmed;
       const nameEl = compact.querySelector('.employee-name');
       if (nameEl) nameEl.textContent = employee.name;
-      // Atualiza título da overlay se for o mesmo funcionário aberto
+      // Atualiza tÃ­tulo da overlay se for o mesmo funcionÃ¡rio aberto
       if (state.expandedId === employee.id) {
         const title = document.querySelector('.overlay .overlay-title');
         if (title) title.textContent = employee.name;
       }
     }
     if (action === 'delete') {
-      const ok = confirm(`Tem certeza que deseja apagar "${employee.name}"? Esta ação não pode ser desfeita.`);
+      const ok = await window.showConfirm?.(`Tem certeza que deseja apagar "${employee.name}"? Esta aÃ§Ã£o nÃ£o pode ser desfeita.`, { title: 'Confirmar exclusÃ£o', confirmText: 'Apagar', cancelText: 'Cancelar' });
       if (!ok) return;
       const deleted = await dbDeleteEmployee(employee.id);
       if (!deleted) return;
@@ -165,15 +138,15 @@ function openOverlay(employee) {
   state.expandedId = employee.id;
   if (!overlayEl || !overlayContentEl) return;
 
-  // Monta cabeçalho da overlay
+  // Monta cabeÃ§alho da overlay
   overlayContentEl.innerHTML = "";
   const header = document.createElement('div');
   header.className = 'overlay-header';
   header.innerHTML = `
-    <button class="btn-icon" id="overlayBackBtn" aria-label="Voltar">← Voltar</button>
+    <button class="btn-icon" id="overlayBackBtn" aria-label="Voltar">â† Voltar</button>
     <div class="overlay-title">${escapeHtml(employee.name)}</div>
     <div class="meta">
-      <label for="meta-${employee.id}">Meta de produção</label>
+      <label for="meta-${employee.id}">Meta de produÃ§Ã£o</label>
       <input id="meta-${employee.id}" type="number" min="0" step="1" value="${employee.meta}" />
     </div>
   `;
@@ -187,7 +160,7 @@ function openOverlay(employee) {
   const toolbar = document.createElement('div');
   toolbar.className = 'weeks-toolbar';
   toolbar.innerHTML = `
-    <div style="color:var(--muted)">Semanas do funcionário</div>
+    <div style="color:var(--muted)">Semanas do funcionÃ¡rio</div>
     <div style="display:flex; gap:8px; align-items:center;">
       <button class="btn-secondary" id="addWeekBtn">Adicionar Semana</button>
       <button class="btn-primary" id="saveWeekBtn">Salvar</button>
@@ -199,7 +172,7 @@ function openOverlay(employee) {
   weeksList.className = 'weeks-list';
   body.appendChild(weeksList);
 
-  // Seleção inicial
+  // SeleÃ§Ã£o inicial
   if (!state.currentWeekId) {
     if (employee.weeks && employee.weeks.length > 0) {
       state.currentWeekId = employee.weeks[employee.weeks.length - 1].id;
@@ -275,7 +248,7 @@ function closeOverlay() {
   state.currentWeekId = null;
 }
 
-// Fechar ao clicar fora do conteúdo
+// Fechar ao clicar fora do conteÃºdo
 overlayEl?.addEventListener('click', (e) => {
   if (e.target === overlayEl) closeOverlay();
 });
@@ -307,7 +280,7 @@ function renderWeeksUI(employee, weeksListEl, bodyEl) {
     const card = document.createElement('div');
     card.className = 'week-card' + (state.currentWeekId === week.id ? ' active' : '');
     card.dataset.id = week.id;
-    card.innerHTML = `<span>${escapeHtml(week.name)}</span><span>›</span>`;
+    card.innerHTML = `<span>${escapeHtml(week.name)}</span><span>â€º</span>`;
     card.addEventListener('click', () => {
       state.currentWeekId = week.id;
       renderWeeksUI(employee, weeksListEl, bodyEl);
@@ -471,7 +444,7 @@ async function dbFetchEmployees() {
 async function dbCreateEmployee(name) {
   if (!window.sb || !currentUser) return null;
   const { data, error } = await window.sb.from('employees').insert({ user_id: currentUser.id, name, meta: 100 }).select('id,name,meta').single();
-  if (error) { alert('Erro ao criar funcionário: ' + error.message); return null; }
+  if (error) { await window.showAlert?.('Erro ao criar funcionário: ' + error.message); return null; }
   return { id: data.id, name: data.name, meta: data.meta ?? 100, weeks: [], draftWeek: null, nextWeekNumber: 1 };
 }
 
@@ -488,7 +461,7 @@ async function dbUpdateEmployeeName(employeeId, name) {
 async function dbDeleteEmployee(employeeId) {
   if (!window.sb || !currentUser) return false;
   const { error } = await window.sb.from('employees').delete().eq('id', employeeId).eq('user_id', currentUser.id);
-  if (error) { alert('Erro ao apagar funcionário: ' + error.message); return false; }
+  if (error) { await window.showAlert?.('Erro ao apagar funcionário: ' + error.message); return false; }
   return true;
 }
 
@@ -496,7 +469,7 @@ async function dbInsertWeek(employeeId, week) {
   if (!window.sb || !currentUser) return null;
   const payload = { employee_id: employeeId, name: week.name, days: week.days, values: week.values };
   const { data, error } = await window.sb.from('weeks').insert(payload).select('id,name,days,values').single();
-  if (error) { alert('Erro ao salvar semana: ' + error.message); return null; }
+  if (error) { await window.showAlert?.('Erro ao salvar semana: ' + error.message); return null; }
   return { id: data.id, name: data.name, days: data.days, values: data.values };
 }
 
@@ -519,23 +492,23 @@ function paintAllCells(grid, meta) {
 function paintCell(cell, value, meta) {
   const v = Number(value);
   const m = Number(meta);
-  // Neutro quando vazio ou meta inválida
+  // Neutro quando vazio ou meta invÃ¡lida
   if (!Number.isFinite(v) || !Number.isFinite(m) || m <= 0) {
     cell.style.background = "var(--cell-bg)";
     return;
   }
 
-  // Razão limitada entre 0 e 1
+  // RazÃ£o limitada entre 0 e 1
   const r = Math.max(0, Math.min(1, v / m));
 
   let hue;
-  // Até metade da meta: vermelho sólido
+  // AtÃ© metade da meta: vermelho sÃ³lido
   if (r <= 0.5) {
     hue = 0; // vermelho
   } else {
-    // Curva não linear para concentrar o degradê perto da meta
-    const t = Math.pow((r - 0.5) / 0.5, 1.4); // r=0.6→quase vermelho, r=0.8→amarelado
-    hue = 120 * Math.max(0, Math.min(1, t)); // até verde
+    // Curva nÃ£o linear para concentrar o degradÃª perto da meta
+    const t = Math.pow((r - 0.5) / 0.5, 1.4); // r=0.6â†’quase vermelho, r=0.8â†’amarelado
+    hue = 120 * Math.max(0, Math.min(1, t)); // atÃ© verde
   }
 
   const sat = 70; // %
@@ -552,7 +525,7 @@ function escapeHtml(str) {
     .replaceAll("'", "&#039;");
 }
 
-// Formatar como NN/NN (mantém apenas dígitos)
+// Formatar como NN/NN (mantÃ©m apenas dÃ­gitos)
 function formatDay(value) {
   const digits = String(value).replace(/\D+/g, "").slice(0, 4);
   if (digits.length <= 2) return digits;

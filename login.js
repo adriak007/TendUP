@@ -1,4 +1,23 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const sp = new URLSearchParams(location.search);
+    if (sp.get('mock') === '1') {
+      localStorage.setItem('mockMode', '1');
+      window.location.href = 'index.html?mock=1';
+      return;
+    }
+    if (localStorage.getItem('mockMode') === '1') {
+      window.location.href = 'index.html';
+      return;
+    }
+    // Se já estiver logado no Supabase, vai para a tela principal
+    const session = await window.sbGetSession?.();
+    if (session) {
+      window.location.href = 'index.html';
+      return;
+    }
+  } catch (_) { /* segue na tela de login */ }
+
   const email = document.getElementById('email');
   const password = document.getElementById('password');
   const loginBtn = document.getElementById('loginBtn');
@@ -37,4 +56,3 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = 'index.html?mock=1';
   });
 });
-
