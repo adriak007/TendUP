@@ -1,0 +1,17 @@
+  // Monta cabeçalho da overlay
+  overlayContentEl.innerHTML = "";
+  const header = document.createElement('div');
+  header.className = 'overlay-header';
+  header.innerHTML = `
+    <button class="btn-icon" id="overlayBackBtn" aria-label="Voltar">← Voltar</button>
+    <div class="overlay-title">${escapeHtml(employee.name)}</div>
+    <div class="meta">
+      <label for="meta-${employee.id}">Meta de produção</label>
+      <input id="meta-${employee.id}" type="number" min="0" step="1" value="${employee.meta}" />
+    </div>
+  `;
+  overlayContentEl.appendChild(header);
+
+  const body = document.createElement('div');
+  body.className = 'overlay-body';
+  overlayContentEl.appendChild(body);

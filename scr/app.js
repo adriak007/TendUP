@@ -33,6 +33,21 @@ const overlayContentEl = overlayEl?.querySelector('.overlay-content');
 
 let currentUser = null;
 
+// Correções de textos estáticos com acentuação no HTML
+(function fixStaticTexts(){
+  try {
+    const navItems = document.querySelectorAll('.nav .nav-item');
+    if (navItems[0]) navItems[0].textContent = 'Produção';
+    if (navItems[1]) navItems[1].textContent = 'Relatórios';
+    if (navItems[2]) navItems[2].textContent = 'Configurações';
+  } catch(_) {}
+  try { if (menuBtn) menuBtn.textContent = '☰'; } catch(_) {}
+  try { const h1 = document.querySelector('.main-header h1'); if (h1) h1.textContent = 'Produção'; } catch(_) {}
+  try { if (addEmployeeBtn) addEmployeeBtn.textContent = 'Adicionar Funcionário'; } catch(_) {}
+  try { document.title = 'TendUP — Produção'; } catch(_) {}
+  try { const oc = document.querySelector('.overlay-content'); if (oc) oc.setAttribute('aria-label', 'Detalhes do funcionário'); } catch(_) {}
+})();
+
 authBtn?.addEventListener('click', async () => {
   if (currentUser) {
     await window.sbSignOut?.();
@@ -43,6 +58,26 @@ authBtn?.addEventListener('click', async () => {
     return;
   }
   window.location.href = 'login.html';
+});
+
+// Adicionar Funcionário: prompta nome e cria registro/local
+addEmployeeBtn?.addEventListener('click', async () => {
+  const name = await window.showPrompt?.({ title: 'Novo funcionário', label: 'Nome do funcionário' });
+  if (name == null) return;
+  const trimmed = String(name).trim();
+  if (!trimmed) return;
+  let emp = null;
+  if (window.sb && currentUser) {
+    emp = await dbCreateEmployee(trimmed);
+    if (!emp) return; // erro já alertado
+  } else {
+    emp = createEmployee(trimmed);
+  }
+  state.employees.push(emp);
+  const card = renderEmployeeCard(emp);
+  employeesEl.appendChild(card);
+  // Abre overlay para já configurar metas/semana
+  openOverlay(emp);
 });
 
 function createEmployee(name) {
@@ -103,7 +138,7 @@ function renderEmployeeCard(employee) {
     if (!btn) return;
     const action = btn.dataset.action;
     if (action === 'edit') {
-      const newName = await window.showPrompt?.({ title: 'Editar nome', label: 'Novo nome do funcionÃ¡rio', initial: employee.name });
+      const newName = await window.showPrompt?.({ title: 'Editar nome', label: 'Novo nome do funcionario', initial: employee.name });
       if (newName == null) return;
       const trimmed = String(newName).trim();
       if (!trimmed || trimmed === employee.name) return;
@@ -118,7 +153,7 @@ function renderEmployeeCard(employee) {
       }
     }
     if (action === 'delete') {
-      const ok = await window.showConfirm?.(`Tem certeza que deseja apagar "${employee.name}"? Esta aÃ§Ã£o nÃ£o pode ser desfeita.`, { title: 'Confirmar exclusÃ£o', confirmText: 'Apagar', cancelText: 'Cancelar' });
+      const ok = await window.showConfirm?.(`Tem certeza que deseja apagar "${employee.name}"? Esta ação não pode ser desfeita.`, { title: 'Confirmar exclusão', confirmText: 'Apagar', cancelText: 'Cancelar' });
       if (!ok) return;
       const deleted = await dbDeleteEmployee(employee.id);
       if (!deleted) return;
@@ -151,6 +186,13 @@ function openOverlay(employee) {
     </div>
   `;
   overlayContentEl.appendChild(header);
+  // Correções de rótulos com acentuação (back button e meta)
+  try {
+    const backBtn = header.querySelector('#overlayBackBtn');
+    if (backBtn) backBtn.textContent = '← Voltar';
+    const metaLbl = header.querySelector(`label[for="meta-${employee.id}"]`);
+    if (metaLbl) metaLbl.textContent = 'Meta de Produção';
+  } catch(_) {}
 
   const body = document.createElement('div');
   body.className = 'overlay-body';
@@ -167,6 +209,11 @@ function openOverlay(employee) {
     </div>
   `;
   body.appendChild(toolbar);
+  // Corrigir título da seção de semanas
+  try {
+    const titleEl = toolbar.querySelector('div');
+    if (titleEl) titleEl.textContent = 'Semanas do Funcionário';
+  } catch(_) {}
 
   const weeksList = document.createElement('div');
   weeksList.className = 'weeks-list';
@@ -286,6 +333,8 @@ function renderWeeksUI(employee, weeksListEl, bodyEl) {
       renderWeeksUI(employee, weeksListEl, bodyEl);
     });
     weeksListEl.appendChild(card);
+    // Remover símbolo indesejado ao lado do nome da semana
+    try { card.innerHTML = `<span>${escapeHtml(week.name)}</span>`; } catch(_) {}
   });
 
   // Editor
