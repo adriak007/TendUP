@@ -1,7 +1,7 @@
 :root {
   /* Green-forward palette */
-  --bg: #0f1512;         /* very dark greenish */
-  --panel: #121a16;      /* dark panel */
+  --bg: #182920;         /* very dark greenish */
+  --panel: #1c2922;      /* dark panel */
   --panel-2: #18221c;    /* darker header panel */
   --text: #e9f3ea;       /* near-white with green tint */
   --muted: #a8b9ad;      /* muted green-gray */
@@ -110,6 +110,7 @@ body {
   gap: 8px;
   cursor: pointer;
 }
+.employee-info { display: grid; gap: 4px; }
 .employee-name { font-weight: 600; }
 .employee-hint { color: var(--muted); font-size: 12px; }
 .employee-actions { display: flex; gap: 6px; }
@@ -136,7 +137,7 @@ body {
   gap: 8px;
 }
 .meta input {
-  width: 110px;
+  width: 140px;
   padding: 6px 8px;
   background: #0b1016;
   border: 1px solid var(--border);
@@ -147,12 +148,14 @@ body {
 .schedule {
   padding: 12px 14px 16px;
 }
+.schedule { overflow-x: auto; }
 
 .grid {
   display: grid;
   grid-template-columns: 90px repeat(5, 1fr);
   gap: 4px;
 }
+.grid { min-width: 700px; }
 .grid .time, .grid .day, .grid .cell {
   border: 1px solid var(--border);
   border-radius: 0;
@@ -238,6 +241,10 @@ input[type="number"] {
   flex-direction: column;
   overflow: hidden;
 }
+.overlay-content.modal-sm {
+  width: min(420px, 94vw);
+  height: auto;
+}
 .overlay-header {
   display: flex;
   align-items: center;
@@ -245,6 +252,19 @@ input[type="number"] {
   padding: 12px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--panel-2);
+}
+/* Badge para Modo Teste */
+.badge-test {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
 }
 .overlay-title { font-weight: 600; }
 .btn-icon {
@@ -330,6 +350,23 @@ input[type="number"] {
     z-index: 1100;
   }
   .sidebar.open { transform: translateX(0); }
+}
+
+/* Ajustes de usabilidade em telas pequenas */
+@media (max-width: 600px) {
+  .employee-compact { align-items: flex-start; padding: 16px; }
+  .employee-actions { gap: 8px; }
+
+  /* Evitar aperto no cabeçalho da overlay */
+  .overlay-header { flex-wrap: wrap; gap: 8px; }
+  .overlay-title { flex: 1 1 100%; }
+  .meta { flex-wrap: wrap; justify-content: flex-start; }
+  .meta label { width: auto; }
+  .meta input { flex: 0 0 160px; width: 160px; padding: 10px 12px; font-size: 16px; }
+
+  /* Entradas da grade maiores para toque e sem zoom */
+  .grid .cell, .grid .day, .grid .time { min-height: 44px; }
+  .grid .cell input[type="number"], .grid .day input { font-size: 16px; }
 }
 
 /* Backdrop da sidebar mobile */
