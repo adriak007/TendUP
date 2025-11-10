@@ -336,6 +336,7 @@ input[type="number"] {
   gap: 8px;
   margin-bottom: 12px;
 }
+.weeks-list .week-card span:last-child { display: none; }
 .week-card {
   background: var(--card);
   border: 1px solid var(--border);
