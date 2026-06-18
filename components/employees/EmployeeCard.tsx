@@ -1,8 +1,10 @@
 "use client";
 
 import type { MouseEvent } from "react";
+import { motion } from "framer-motion";
 import { useDataProvider } from "@/lib/data/DataProviderContext";
 import { useModal } from "@/components/ui/useModal";
+import { Button } from "@/components/ui/Button";
 import type { Employee } from "@/lib/data/types";
 
 interface EmployeeCardProps {
@@ -10,6 +12,15 @@ interface EmployeeCardProps {
   onOpen: () => void;
   onRename: (name: string) => void;
   onDelete: () => void;
+}
+
+function initials(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
 }
 
 export function EmployeeCard({ employee, onOpen, onRename, onDelete }: EmployeeCardProps) {
@@ -43,21 +54,33 @@ export function EmployeeCard({ employee, onOpen, onRename, onDelete }: EmployeeC
   }
 
   return (
-    <article className="employee-card">
-      <div className="employee-compact" onClick={onOpen}>
-        <div className="employee-info">
-          <div className="employee-name">{employee.name}</div>
-          <div className="employee-hint">Clique para abrir</div>
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+      className="group cursor-pointer rounded-2xl border border-border bg-surface p-4 shadow-sm transition-shadow hover:shadow-md"
+      onClick={onOpen}
+    >
+      <div className="flex items-center gap-3">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-soft text-sm font-semibold text-accent">
+          {initials(employee.name)}
         </div>
-        <div className="employee-actions" aria-label="Ações do funcionário">
-          <button className="btn-secondary btn-sm" title="Editar nome" onClick={handleEdit}>
-            Editar
-          </button>
-          <button className="btn-danger btn-sm" title="Excluir funcionário" onClick={handleDelete}>
-            Apagar
-          </button>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-medium text-text">{employee.name}</div>
+          <div className="text-xs text-muted">Clique para abrir</div>
         </div>
       </div>
-    </article>
+      <div className="mt-3 flex justify-end gap-1.5 border-t border-border pt-3">
+        <Button variant="ghost" size="sm" title="Editar nome" onClick={handleEdit}>
+          Editar
+        </Button>
+        <Button variant="ghost" size="sm" className="text-danger" title="Excluir funcionário" onClick={handleDelete}>
+          Apagar
+        </Button>
+      </div>
+    </motion.article>
   );
 }

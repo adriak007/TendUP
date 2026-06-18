@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import type { Employee, Week } from "@/lib/data/types";
 import { useDataProvider } from "@/lib/data/DataProviderContext";
 import { emptyWeekValues } from "@/lib/constants";
+import { Button } from "@/components/ui/Button";
 import { WeekTabs } from "./WeekTabs";
 import { ScheduleGrid } from "./ScheduleGrid";
 
@@ -103,21 +105,37 @@ export function EmployeeOverlay({ employee, onClose, onMetaChange }: EmployeeOve
   }
 
   return (
-    <div
-      className="overlay open"
-      aria-hidden="false"
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm sm:p-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.18 }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="overlay-content" role="dialog" aria-modal="true" aria-label="Detalhes do funcionário">
-        <div className="overlay-header">
-          <button className="btn-icon" aria-label="Voltar" onClick={onClose}>
-            ← Voltar
-          </button>
-          <div className="overlay-title">{employee.name}</div>
-          <div className="meta">
-            <label htmlFor={`meta-${employee.id}`}>Meta de Produção</label>
+      <motion.div
+        className="flex h-[min(90vh,900px)] w-[min(1100px,96vw)] flex-col overflow-hidden rounded-2xl border border-border bg-surface shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Detalhes do funcionário"
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.96, y: 12 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border bg-slate-50 px-5 py-4">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" aria-label="Voltar" onClick={onClose}>
+              ← Voltar
+            </Button>
+            <div className="font-semibold text-text">{employee.name}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label htmlFor={`meta-${employee.id}`} className="text-sm text-muted">
+              Meta de Produção
+            </label>
             <input
               id={`meta-${employee.id}`}
               type="number"
@@ -125,11 +143,12 @@ export function EmployeeOverlay({ employee, onClose, onMetaChange }: EmployeeOve
               step={1}
               value={meta}
               onChange={(e) => handleMetaChange(e.target.value)}
+              className="w-28 rounded-lg border border-border bg-white px-3 py-1.5 text-sm text-text focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
             />
           </div>
         </div>
 
-        <div className="overlay-body">
+        <div className="flex-1 overflow-auto p-5">
           <WeekTabs
             weeks={weeks}
             currentWeekId={currentWeekId}
@@ -160,12 +179,12 @@ export function EmployeeOverlay({ employee, onClose, onMetaChange }: EmployeeOve
               }
             />
           ) : (
-            <div style={{ padding: 16, color: "var(--muted)" }}>
+            <div className="rounded-xl border border-dashed border-border p-6 text-sm text-muted">
               Nenhuma semana selecionada. Clique em &quot;Adicionar Semana&quot;.
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

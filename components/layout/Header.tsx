@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import { useSidebar } from "./SidebarContext";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { Button } from "@/components/ui/Button";
 
 interface HeaderProps {
   title: string;
@@ -20,16 +21,27 @@ export function Header({ title, actions }: HeaderProps) {
   }
 
   return (
-    <header className="main-header">
-      <button className="btn-icon mobile-only" aria-label="Abrir menu" title="Menu" onClick={toggle}>
-        ☰
-      </button>
-      <h1>{title}</h1>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        {isDemo && <span className="badge-test">Modo Teste</span>}
-        <button className="btn-secondary" onClick={handleAuthClick}>
-          {isDemo ? "Sair do Teste" : user ? "Sair" : "Entrar"}
+    <header className="sticky top-0 z-20 flex flex-wrap items-center justify-between gap-3 border-b border-border bg-surface/80 px-4 py-3 backdrop-blur-sm sm:px-6 sm:py-4">
+      <div className="flex items-center gap-3">
+        <button
+          className="shrink-0 rounded-lg p-2 text-muted hover:bg-slate-100 md:hidden"
+          aria-label="Abrir menu"
+          title="Menu"
+          onClick={toggle}
+        >
+          ☰
         </button>
+        <h1 className="whitespace-nowrap text-lg font-semibold text-text">{title}</h1>
+      </div>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        {isDemo && (
+          <span className="shrink-0 whitespace-nowrap rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent">
+            Modo Teste
+          </span>
+        )}
+        <Button variant="secondary" size="sm" className="shrink-0 whitespace-nowrap" onClick={handleAuthClick}>
+          {isDemo ? "Sair do Teste" : user ? "Sair" : "Entrar"}
+        </Button>
         {actions}
       </div>
     </header>

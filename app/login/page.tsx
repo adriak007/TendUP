@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import { useAuth } from "@/lib/auth/AuthContext";
+import { Button } from "@/components/ui/Button";
+import { inputClass } from "@/components/ui/styles";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -53,68 +56,95 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="login-page">
-      <div className="login-card">
-        <div className="brand" style={{ textAlign: "center" }}>
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg p-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--color-accent-soft)_0%,_transparent_60%)]" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-8 shadow-xl"
+      >
+        <div className="mb-6 flex justify-center">
           <Image
             src="/img/TENDENCIA_COM_NOME_ABAIXO-removebg-preview.png"
             alt="TendUP"
             width={500}
             height={500}
             priority
-            style={{ maxWidth: 220, width: "100%", height: "auto", margin: "0 auto", filter: "drop-shadow(0 6px 12px rgba(0,0,0,0.3))" }}
+            className="h-auto w-36"
           />
         </div>
-        <h1 style={{ margin: 0 }}>Entrar</h1>
-        <p className="muted">
+
+        <h1 className="text-xl font-semibold text-text">Entrar</h1>
+        <p className="mt-1 text-sm text-muted">
           Use seu email e senha para acessar, ou clique em Testar para explorar a versão Demo
         </p>
 
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          placeholder="voce@email.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="mt-6 grid gap-4">
+          <div className="grid gap-1.5">
+            <label htmlFor="email" className="text-sm font-medium text-muted">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              placeholder="voce@email.com"
+              className={inputClass}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <label htmlFor="password">Senha</label>
-        <input
-          id="password"
-          type="password"
-          placeholder="Sua senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleLogin();
-          }}
-        />
+          <div className="grid gap-1.5">
+            <label htmlFor="password" className="text-sm font-medium text-muted">
+              Senha
+            </label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Sua senha"
+              className={inputClass}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleLogin();
+              }}
+            />
+          </div>
 
-        {error && <p style={{ color: "var(--danger)", fontSize: 13 }}>{error}</p>}
-        {info && <p className="muted">{info}</p>}
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              className="text-sm text-danger"
+            >
+              {error}
+            </motion.p>
+          )}
+          {info && <p className="text-sm text-muted">{info}</p>}
 
-        <div className="login-actions">
-          <button className="btn-secondary" type="button" onClick={handleTest}>
-            Testar
-          </button>
-          <button className="btn-primary" type="button" onClick={handleLogin} disabled={submitting}>
-            Entrar
-          </button>
+          <div className="flex items-center justify-end gap-2 pt-1">
+            <Button variant="secondary" type="button" onClick={handleTest}>
+              Testar
+            </Button>
+            <Button variant="primary" type="button" onClick={handleLogin} disabled={submitting}>
+              Entrar
+            </Button>
+          </div>
+
+          <p className="text-center text-sm text-muted">
+            Sem conta?{" "}
+            <button
+              type="button"
+              className="font-medium text-accent hover:text-accent-hover"
+              onClick={handleSignup}
+            >
+              Criar uma conta
+            </button>
+          </p>
         </div>
-        <div className="muted">
-          Sem conta?{" "}
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              handleSignup();
-            }}
-          >
-            Criar uma conta
-          </a>
-        </div>
-      </div>
+      </motion.div>
     </main>
   );
 }

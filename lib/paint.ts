@@ -3,7 +3,7 @@ export function getCellColor(value: string | number, meta: number): string {
   const m = Number(meta);
 
   if (!Number.isFinite(v) || !Number.isFinite(m) || m <= 0) {
-    return "var(--cell-bg)";
+    return "var(--color-cell-empty)";
   }
 
   const r = Math.max(0, Math.min(1, v / m));

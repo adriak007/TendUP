@@ -14,9 +14,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <DataProviderProvider>
       <ModalProvider>
         <SidebarProvider>
-          <div className="app">
+          <div className="flex min-h-screen bg-bg">
             <Sidebar />
-            <main className="main">{children}</main>
+            <main className="min-w-0 flex-1">{children}</main>
           </div>
           <MobileSidebarBackdrop />
         </SidebarProvider>

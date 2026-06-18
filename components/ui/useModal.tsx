@@ -1,7 +1,10 @@
 "use client";
 
+import { AnimatePresence } from "framer-motion";
 import { createContext, useCallback, useContext, useState, type ReactNode } from "react";
 import { Modal } from "./Modal";
+import { Button } from "./Button";
+import { inputClass } from "./styles";
 
 interface AlertOptions {
   title?: string;
@@ -87,114 +90,116 @@ export function ModalProvider({ children }: { children: ReactNode }) {
     <ModalContext.Provider value={{ alert, confirm, prompt }}>
       {children}
 
-      {active?.kind === "alert" && (
-        <Modal
-          title={active.title}
-          onClose={() => {
-            active.resolve();
-            close();
-          }}
-        >
-          <div className="overlay-body" style={{ padding: 16 }}>
-            {active.message}
-          </div>
-          <div style={{ padding: "0 16px 16px", display: "flex", justifyContent: "flex-end" }}>
-            <button
-              className="btn-primary"
-              onClick={() => {
-                active.resolve();
-                close();
-              }}
-            >
-              {active.primaryText}
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {active?.kind === "confirm" && (
-        <Modal
-          title={active.title}
-          onClose={() => {
-            active.resolve(false);
-            close();
-          }}
-        >
-          <div className="overlay-body" style={{ padding: 16 }}>
-            {active.message}
-          </div>
-          <div style={{ padding: "0 16px 16px", display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button
-              className="btn-secondary"
-              onClick={() => {
-                active.resolve(false);
-                close();
-              }}
-            >
-              {active.cancelText}
-            </button>
-            <button
-              className="btn-primary"
-              onClick={() => {
-                active.resolve(true);
-                close();
-              }}
-            >
-              {active.confirmText}
-            </button>
-          </div>
-        </Modal>
-      )}
-
-      {active?.kind === "prompt" && (
-        <Modal
-          title={active.title}
-          onClose={() => {
-            active.resolve(null);
-            close();
-          }}
-        >
-          <div className="overlay-body" style={{ padding: 16, display: "grid", gap: 8 }}>
-            <label>{active.label}</label>
-            <input
-              type="text"
-              autoFocus
-              value={promptValue}
-              onChange={(e) => setPromptValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  active.resolve(promptValue);
+      <AnimatePresence>
+        {active?.kind === "alert" && (
+          <Modal
+            key="alert"
+            title={active.title}
+            onClose={() => {
+              active.resolve();
+              close();
+            }}
+          >
+            <div className="px-5 py-4 text-sm text-text">{active.message}</div>
+            <div className="flex justify-end gap-2 px-5 pb-4">
+              <Button
+                variant="primary"
+                onClick={() => {
+                  active.resolve();
                   close();
-                }
-                if (e.key === "Escape") {
+                }}
+              >
+                {active.primaryText}
+              </Button>
+            </div>
+          </Modal>
+        )}
+
+        {active?.kind === "confirm" && (
+          <Modal
+            key="confirm"
+            title={active.title}
+            onClose={() => {
+              active.resolve(false);
+              close();
+            }}
+          >
+            <div className="px-5 py-4 text-sm text-text">{active.message}</div>
+            <div className="flex justify-end gap-2 px-5 pb-4">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  active.resolve(false);
+                  close();
+                }}
+              >
+                {active.cancelText}
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  active.resolve(true);
+                  close();
+                }}
+              >
+                {active.confirmText}
+              </Button>
+            </div>
+          </Modal>
+        )}
+
+        {active?.kind === "prompt" && (
+          <Modal
+            key="prompt"
+            title={active.title}
+            onClose={() => {
+              active.resolve(null);
+              close();
+            }}
+          >
+            <div className="grid gap-2 px-5 py-4">
+              <label className="text-sm font-medium text-muted">{active.label}</label>
+              <input
+                type="text"
+                autoFocus
+                className={inputClass}
+                value={promptValue}
+                onChange={(e) => setPromptValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    active.resolve(promptValue);
+                    close();
+                  }
+                  if (e.key === "Escape") {
+                    active.resolve(null);
+                    close();
+                  }
+                }}
+              />
+            </div>
+            <div className="flex justify-end gap-2 px-5 pb-4">
+              <Button
+                variant="secondary"
+                onClick={() => {
                   active.resolve(null);
                   close();
-                }
-              }}
-            />
-          </div>
-          <div style={{ padding: "0 16px 16px", display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button
-              className="btn-secondary"
-              onClick={() => {
-                active.resolve(null);
-                close();
-              }}
-            >
-              Cancelar
-            </button>
-            <button
-              className="btn-primary"
-              onClick={() => {
-                active.resolve(promptValue);
-                close();
-              }}
-            >
-              Salvar
-            </button>
-          </div>
-        </Modal>
-      )}
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  active.resolve(promptValue);
+                  close();
+                }}
+              >
+                Salvar
+              </Button>
+            </div>
+          </Modal>
+        )}
+      </AnimatePresence>
     </ModalContext.Provider>
   );
 }
