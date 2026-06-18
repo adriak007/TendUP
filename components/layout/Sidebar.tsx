@@ -8,6 +8,7 @@ import { useSidebar } from "./SidebarContext";
 
 const NAV_ITEMS = [
   { href: "/producao", label: "Produção" },
+  { href: "/cartao-ponto", label: "Cartão de Ponto" },
   { href: "/relatorios", label: "Relatórios" },
   { href: "/configuracoes", label: "Configurações" },
 ];

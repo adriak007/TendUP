@@ -1,7 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const PROTECTED_PREFIXES = ["/producao", "/relatorios", "/configuracoes"];
+const PROTECTED_PREFIXES = [
+  "/producao",
+  "/relatorios",
+  "/configuracoes",
+  "/cartao-ponto",
+  "/api/cartao-ponto",
+];
 const DEMO_COOKIE = "tendup_demo";
 
 export async function proxy(request: NextRequest) {
