@@ -15,7 +15,7 @@ export function DataProviderProvider({ children }: { children: ReactNode }) {
 
   const provider = useMemo<DataProvider | null>(() => {
     if (isDemo) return createLocalDataProvider();
-    if (user) return createSupabaseDataProvider(supabase, user.id);
+    if (user && supabase) return createSupabaseDataProvider(supabase, user.id);
     return null;
   }, [isDemo, user, supabase]);
 

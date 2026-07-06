@@ -43,6 +43,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- leitura de document.cookie só é segura após montar no cliente
     setIsDemo(readDemoCookie());
 
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
     supabase.auth.getUser().then(({ data }) => {
       setUser(data.user ?? null);
       setLoading(false);
@@ -56,17 +61,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase]);
 
   const signIn = async (email: string, password: string) => {
+    if (!supabase) return { error: "Supabase não configurado" };
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
 
   const signUp = async (email: string, password: string) => {
+    if (!supabase) return { error: "Supabase não configurado" };
     const { error } = await supabase.auth.signUp({ email, password });
     return { error: error?.message ?? null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    if (supabase) await supabase.auth.signOut();
     setUser(null);
     router.push("/login");
   };
